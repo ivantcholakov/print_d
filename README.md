@@ -1,4 +1,4 @@
 print_d
 =======
 
-Enhanced print_r function for PHP
+![Print_d](https://raw.github.com/vikerlane/print_d/master/example.png)
