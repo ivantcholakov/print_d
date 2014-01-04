@@ -57,7 +57,7 @@ function print_d($var)
 		'type-integer' => 'font-weight: bold; max-width: 250px; color: #00d; text-align: right;',
 		'type-float' => 'font-weight: bold; max-width: 250px; color: #00d; text-align: right;',
 		'type-double' => 'font-weight: bold; max-width: 250px; color: #00d; text-align: right;',
-		'type-string' => 'font-weight: bold; max-width: 250px; color: #0d0;',
+		'type-string' => 'font-weight: bold; max-width: 250px; color: #d00;',
 		'type-boolean' => 'font-weight: bold; max-width: 250px; color: #bbb;',
 		'type-null' => 'font-weight: bold; max-width: 250px; color: #bbb;',
 		'void' => 'font-style: italic; color: #bbb;',
