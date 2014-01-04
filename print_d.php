@@ -80,7 +80,7 @@ function print_d($var)
 		}
 	}
 
-	$type = gettype($var);
+	$type = strtolower(gettype($var));
 
 	$ret = '<div style="'.$css['holder'].'">';
 
@@ -98,23 +98,36 @@ function print_d($var)
 	{
 	 	case 'array':
 	 	case 'object':
-	 		foreach($var as $i => $v)
-	 		{
-	 			$v_type = strtolower(gettype($v));
-	 			
-	 			if ($v_type === 'object' || $v_type === 'array')
-	 				$v = '<pre style="'.$css['pre'].'">'.print_r($v, true).'</pre>';
-	 			else if ($v_type === 'boolean')
-	 				$v = $v ? 'TRUE' : 'FALSE';
-	 			else if ($v_type === 'string' && $v === '')
-	 				$v = '<span style="'.$css['emptystring'].'">empty string</span>';
-	 			else if ($v_type === 'null')
-	 				$v = 'NULL';
 
-	 			$ret .= '<tr>';
-	 			$ret .= '<td style="'.$css['td'].$css['type'].'">'.$v_type.'</td>';
-	 			$ret .= '<td style="'.$css['td'].'">'.$i.'</td>';
-	 			$ret .= '<td style="'.$css['td'].$css['type-'.$v_type].'">'.$v.'</td>';
+	 		$count = 0;
+	 		if ($var)
+	 		{
+		 		foreach($var as $i => $v)
+		 		{
+		 			++$count;
+		 			$v_type = strtolower(gettype($v));
+		 			
+		 			if ($v_type === 'object' || $v_type === 'array')
+		 				$v = '<pre style="'.$css['pre'].'">'.print_r($v, true).'</pre>';
+		 			else if ($v_type === 'boolean')
+		 				$v = $v ? 'TRUE' : 'FALSE';
+		 			else if ($v_type === 'string' && $v === '')
+		 				$v = '<span style="'.$css['emptystring'].'">empty string</span>';
+		 			else if ($v_type === 'null')
+		 				$v = 'NULL';
+
+		 			$ret .= '<tr>';
+		 			$ret .= '<td style="'.$css['td'].$css['type'].'">'.$v_type.'</td>';
+		 			$ret .= '<td style="'.$css['td'].'">'.$i.'</td>';
+		 			$ret .= '<td style="'.$css['td'].$css['type-'.$v_type].'">'.$v.'</td>';
+		 			$ret .= '</tr>';
+		 		}
+		 	}
+
+		 	if ($count === 0)
+	 		{
+				$ret .= '<tr>';
+	 			$ret .= '<td style="'.$css['td'].'"><span style="'.$css['emptystring'].'">empty '.($type === 'array' ? 'array' : 'class').'</span></td>';
 	 			$ret .= '</tr>';
 	 		}
 
@@ -179,6 +192,9 @@ function print_d($var)
 
  			if ($type === 'boolean')
 	 			$var = $var ? 'TRUE' : 'FALSE';
+	 		else if ($type === 'null')
+ 				$var = 'NULL';
+
 
  			$ret .= '<tr>';
  			$ret .= '<td style="'.$css['td'].$css['type'].'">'.$type.'</td>';
