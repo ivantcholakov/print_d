@@ -67,33 +67,36 @@ function print_d($var, $options = false)
 	if (!isset($options['varname']) || $options['varname'])
 	{
 		$t = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-		$s = @file($t[0]['file']);
-		$s = $s[$t[0]['line']-1];
-		$t = explode('print_d(', $s, 2);
-		if (count($t) > 1)
+		if (file_exists($t[0]['file']))
 		{
-			$t = trim(preg_replace('/\s+/', ' ', $t[1]));
-			if (strpos($t, '('))
+			$s = file($t[0]['file']);
+			$s = $s[$t[0]['line']-1];
+			$t = explode('print_d(', $s, 2);
+			if (count($t) > 1)
 			{
-				$t = explode(');', $t, 2);
-				$func_name = $t[0];
-				$func_name = trim(preg_replace('/\s+/', '', $func_name));
-
-				if (strtolower(substr($func_name, 0, 6)) === 'array(')
-					unset($func_name);
-				else
+				$t = trim(preg_replace('/\s+/', ' ', $t[1]));
+				if (strpos($t, '('))
 				{
-					if (strtolower(substr($func_name, -5)) === ',true')
-						$func_name = substr($func_name, 0, -5);
+					$t = explode(');', $t, 2);
+					$func_name = $t[0];
+					$func_name = trim(preg_replace('/\s+/', '', $func_name));
+
+					if (strtolower(substr($func_name, 0, 6)) === 'array(')
+						unset($func_name);
+					else
+					{
+						if (strtolower(substr($func_name, -5)) === ',true')
+							$func_name = substr($func_name, 0, -5);
+					}
 				}
-			}
-			else if (substr($t, 0, 1) == '$')
-			{
-				$t = explode(');', $t, 2);
-				$name = $t[0];
-				$name = trim(preg_replace('/\s+/', '', $name));
-				if (strtolower(substr($name, -5)) === ',true')
-					$name = substr($name, 0, -5);
+				else if (substr($t, 0, 1) == '$')
+				{
+					$t = explode(');', $t, 2);
+					$name = $t[0];
+					$name = trim(preg_replace('/\s+/', '', $name));
+					if (strtolower(substr($name, -5)) === ',true')
+						$name = substr($name, 0, -5);
+				}
 			}
 		}
 	}
