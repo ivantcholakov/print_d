@@ -37,10 +37,10 @@ either expressed or implied, of the FreeBSD Project.
 
 */
 
-function print_d($var)
+function print_d($var, $options = false)
 {
 	$css = array(
-		'holder' => 'border: 1px solid #eee; padding: 6px; background: #fff; float: left; margin: 3px; font-size: 11px; font-family:Lucida Console, Monaco, monospace;',
+		'holder' => 'border: 1px solid #ddd; padding: 6px; background: #fff; float: left; margin: 3px; font-size: 11px; font-family:Lucida Console, Monaco, monospace;',
 		'table' => 'border: 1px solid #ddd; border-collapse:collapse;',
 		'table-methods' => 'margin-top: 4px; width: 100%;',
 		'td' => 'border: 1px solid #ddd; font-size: 11px; vertical-align: top; padding: 2px 4px 2px 4px;',
@@ -64,19 +64,21 @@ function print_d($var)
 		'emptystring' => 'color: #bbb; font-style: italic; font-weight: normal;'
 	);
 
-	$t = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-	$s = file($t[0]['file']);
-	$s = $s[$t[0]['line']-1];
-
-	$t = explode('print_d(', $s, 2);
-	if (count($t) > 1)
+	if (!isset($options['varname']) || $options['varname'])
 	{
-		$t = trim(preg_replace('/\s+/', ' ', $t[1]));
-		if (substr($t, 0, 1) == '$')
+		$t = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		$s = @file($t[0]['file']);
+		$s = $s[$t[0]['line']-1];
+		$t = explode('print_d(', $s, 2);
+		if (count($t) > 1)
 		{
-			$t = explode(')', $t, 2);
-			$name = $t[0];
-			$name = trim(preg_replace('/\s+/', '', $name));
+			$t = trim(preg_replace('/\s+/', ' ', $t[1]));
+			if (substr($t, 0, 1) == '$')
+			{
+				$t = explode(')', $t, 2);
+				$name = $t[0];
+				$name = trim(preg_replace('/\s+/', '', $name));
+			}
 		}
 	}
 
@@ -108,7 +110,7 @@ function print_d($var)
 		 			$v_type = strtolower(gettype($v));
 		 			
 		 			if ($v_type === 'object' || $v_type === 'array')
-		 				$v = '<pre style="'.$css['pre'].'">'.print_r($v, true).'</pre>';
+		 				$v = print_d($v, array('varname' => false));
 		 			else if ($v_type === 'boolean')
 		 				$v = $v ? 'TRUE' : 'FALSE';
 		 			else if ($v_type === 'string' && $v === '')
@@ -131,7 +133,7 @@ function print_d($var)
 	 			$ret .= '</tr>';
 	 		}
 
-	 		if ($type === 'object')
+	 		if ($type === 'object' && ($options === true || (isset($options['methods']) && $options['methods'] === true)))
 	 		{
 	 			$methods = get_class_methods($var);
 	 			if ($methods)
