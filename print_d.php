@@ -73,11 +73,27 @@ function print_d($var, $options = false)
 		if (count($t) > 1)
 		{
 			$t = trim(preg_replace('/\s+/', ' ', $t[1]));
-			if (substr($t, 0, 1) == '$')
+			if (strpos($t, '('))
 			{
-				$t = explode(')', $t, 2);
+				$t = explode(');', $t, 2);
+				$func_name = $t[0];
+				$func_name = trim(preg_replace('/\s+/', '', $func_name));
+
+				if (strtolower(substr($func_name, 0, 6)) === 'array(')
+					unset($func_name);
+				else
+				{
+					if (strtolower(substr($func_name, -5)) === ',true')
+						$func_name = substr($func_name, 0, -5);
+				}
+			}
+			else if (substr($t, 0, 1) == '$')
+			{
+				$t = explode(');', $t, 2);
 				$name = $t[0];
 				$name = trim(preg_replace('/\s+/', '', $name));
+				if (strtolower(substr($name, -5)) === ',true')
+					$name = substr($name, 0, -5);
 			}
 		}
 	}
@@ -86,10 +102,12 @@ function print_d($var, $options = false)
 
 	$ret = '<div style="'.$css['holder'].'">';
 
-	if ($type === 'array' || $type === 'object')
+	if ($type === 'array' || $type === 'object' || isset($func_name))
 	{
 		if (isset($name))
 			$ret .= '<strong>'.$name.'</strong>';
+		else if (isset($func_name))
+			$ret .= '<strong>'.$func_name.'</strong>';
 
 		if ($type === 'object')
 			$ret .= ' '.get_class($var);
