@@ -39,6 +39,15 @@ either expressed or implied, of the FreeBSD Project.
 
 function print_d($var, $options = false)
 {
+	if (is_bool($options))
+	{
+		$options = array('methods' => $options);
+	}
+
+	$options['recursive'] = isset($options['recursive']) ? $options['recursive'] : false;
+
+	$ret = '';
+
 	$css = array(
 		'holder' => 'border: 1px solid #ddd; padding: 6px; background: #fff; float: left; margin: 3px; font-size: 11px; font-family:Lucida Console, Monaco, monospace;',
 		'table' => 'border: 1px solid #ddd; border-collapse:collapse;',
@@ -64,7 +73,7 @@ function print_d($var, $options = false)
 		'emptystring' => 'color: #bbb; font-style: italic; font-weight: normal;'
 	);
 
-	if (!isset($options['varname']) || $options['varname'])
+	if (!$options['recursive'])
 	{
 		$t = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		if (file_exists($t[0]['file']))
@@ -103,7 +112,8 @@ function print_d($var, $options = false)
 
 	$type = strtolower(gettype($var));
 
-	$ret = '<div style="'.$css['holder'].'">';
+	if (!$options['recursive'])
+		$ret .= '<div style="'.$css['holder'].'">';
 
 	if ($type === 'array' || $type === 'object' || isset($func_name))
 	{
@@ -131,7 +141,7 @@ function print_d($var, $options = false)
 		 			$v_type = strtolower(gettype($v));
 		 			
 		 			if ($v_type === 'object' || $v_type === 'array')
-		 				$v = print_d($v, array('varname' => false));
+		 				$v = print_d($v, array('recursive' => true));
 		 			else if ($v_type === 'boolean')
 		 				$v = $v ? 'TRUE' : 'FALSE';
 		 			else if ($v_type === 'string' && $v === '')
@@ -229,7 +239,8 @@ function print_d($var, $options = false)
 	}
 	$ret .= '</table>';
 
-	$ret .= '</div>';
+	if (!$options['recursive'])
+		$ret .= '</div>';
 
 	return $ret;
 }
