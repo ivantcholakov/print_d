@@ -88,3 +88,12 @@
 
 	$date = array('2014' => 'Year');
 	echo print_d($date[date('Y')]);
+
+	echo '<br style="clear:both;">';
+	echo '<h3>Printing special cases</h3>';
+
+	$test = array('test' => 'Special case text');
+
+	echo '<div>'.print_d($test['test']).'</div>';
+?>
+<?= print_d($test['test'], false) ?>
