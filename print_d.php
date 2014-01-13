@@ -84,27 +84,53 @@ function print_d($var, $options = false)
 			if (count($t) > 1)
 			{
 				$t = trim(preg_replace('/\s+/', ' ', $t[1]));
+
+				$t2 = '';
+				$len = strlen($t);
+				$prev = false;
+				$quotes_open = false;
+				$brackets = 0;
+				for($i=0; $i<$len; ++$i)
+				{
+					$c = $t[$i];
+					if ($quotes_open)
+					{
+						if ($c === $quotes_open && $prev !== '\\')
+						{
+							$quotes_open = false;
+						}
+					}
+					else if ($c === '\'' || $c === '"')
+					{
+						$quotes_open = $c;
+					}
+					else if ($c === '(')
+					{
+						++$brackets;
+					}
+					else if ($brackets > 0 && $c === ')')
+					{
+						--$brackets;
+					}
+					else if ($brackets === 0 && ($c === ',' || $c === ')'))
+					{
+						break;
+					}
+					$t2 .= $t[$i];
+					$prev = $t[$i];
+				}
+
+				$t = trim(preg_replace('/\s+/', ' ', $t2));
+
 				if (strpos($t, '('))
 				{
-					$t = explode(');', $t, 2);
-					$func_name = $t[0];
-					$func_name = trim(preg_replace('/\s+/', '', $func_name));
-
-					if (strtolower(substr($func_name, 0, 6)) === 'array(')
-						unset($func_name);
-					else
-					{
-						if (strtolower(substr($func_name, -5)) === ',true')
-							$func_name = substr($func_name, 0, -5);
-					}
+					if (strtolower(substr($t, 0, 6)) !== 'array(')
+						$func_name = $t;
 				}
-				else if (substr($t, 0, 1) == '$')
+				else if ($t[0] === '$')
 				{
-					$t = explode(');', $t, 2);
-					$name = $t[0];
-					$name = trim(preg_replace('/\s+/', '', $name));
-					if (strtolower(substr($name, -5)) === ',true')
-						$name = substr($name, 0, -5);
+					$name = $t;
+						$name = trim(preg_replace('/\s+/', '', $name));
 				}
 			}
 		}
